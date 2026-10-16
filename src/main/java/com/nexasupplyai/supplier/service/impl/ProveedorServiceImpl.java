@@ -6,7 +6,7 @@ import com.nexasupplyai.supplier.entity.Proveedor;
 import com.nexasupplyai.supplier.mapper.ProveedorMapper;
 import com.nexasupplyai.supplier.repository.ProveedorRepository;
 import com.nexasupplyai.supplier.service.interfaces.ProveedorServiceInterface;
-import jakarta.persistence.EntityNotFoundException;
+import com.nexasupplyai.supplier.exception.ProveedorNoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +60,6 @@ public class ProveedorServiceImpl implements ProveedorServiceInterface {
 
     private Proveedor buscar(UUID id) {
         return repositorio.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado: " + id));
+                .orElseThrow(() -> new ProveedorNoEncontradoException(id));
     }
 }

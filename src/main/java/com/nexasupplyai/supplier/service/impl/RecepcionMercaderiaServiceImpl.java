@@ -8,7 +8,8 @@ import com.nexasupplyai.supplier.mapper.RecepcionMercaderiaMapper;
 import com.nexasupplyai.supplier.repository.OrdenCompraRepository;
 import com.nexasupplyai.supplier.repository.RecepcionMercaderiaRepository;
 import com.nexasupplyai.supplier.service.interfaces.RecepcionMercaderiaServiceInterface;
-import jakarta.persistence.EntityNotFoundException;
+import com.nexasupplyai.supplier.exception.RecepcionMercaderiaNoEncontradaException;
+import com.nexasupplyai.supplier.exception.OrdenCompraNoEncontradaException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,11 +55,11 @@ public class RecepcionMercaderiaServiceImpl implements RecepcionMercaderiaServic
 
 	private RecepcionMercaderia buscar(UUID id) {
 		return repositorio.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Recepción no encontrada: " + id));
+                .orElseThrow(() -> new RecepcionMercaderiaNoEncontradaException(id));
 	}
 
 	private OrdenCompra orden(UUID id) {
 		return ordenes.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Orden no encontrada: " + id));
+                .orElseThrow(() -> new OrdenCompraNoEncontradaException(id));
 	}
 }

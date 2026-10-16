@@ -8,7 +8,8 @@ import com.nexasupplyai.supplier.mapper.HistorialEstadoOrdenCompraMapper;
 import com.nexasupplyai.supplier.repository.HistorialEstadoOrdenCompraRepository;
 import com.nexasupplyai.supplier.repository.OrdenCompraRepository;
 import com.nexasupplyai.supplier.service.interfaces.HistorialEstadoOrdenCompraServiceInterface;
-import jakarta.persistence.EntityNotFoundException;
+import com.nexasupplyai.supplier.exception.HistorialEstadoOrdenCompraNoEncontradoException;
+import com.nexasupplyai.supplier.exception.OrdenCompraNoEncontradaException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +34,14 @@ public class HistorialEstadoOrdenCompraServiceImpl implements HistorialEstadoOrd
 
 	public HistorialEstadoOrdenCompraResponse obtenerPorId(UUID id) {
 		HistorialEstadoOrdenCompra entidad = repositorio.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Historial no encontrado: " + id));
+                .orElseThrow(() -> new HistorialEstadoOrdenCompraNoEncontradoException(id));
 		return mapper.aResponse(entidad);
 	}
 
 	@Transactional
 	public HistorialEstadoOrdenCompraResponse crear(HistorialEstadoOrdenCompraRequest request) {
 		OrdenCompra ordenCompra = ordenes.findById(request.idOrdenCompra())
-				.orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new OrdenCompraNoEncontradaException(
 						"Orden no encontrada: " + request.idOrdenCompra()));
 		return mapper.aResponse(repositorio.save(mapper.aEntidad(request, ordenCompra)));
 	}

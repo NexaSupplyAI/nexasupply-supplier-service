@@ -10,7 +10,9 @@ import com.nexasupplyai.supplier.repository.DetalleOrdenCompraRepository;
 import com.nexasupplyai.supplier.repository.DetalleRecepcionMercaderiaRepository;
 import com.nexasupplyai.supplier.repository.RecepcionMercaderiaRepository;
 import com.nexasupplyai.supplier.service.interfaces.DetalleRecepcionMercaderiaServiceInterface;
-import jakarta.persistence.EntityNotFoundException;
+import com.nexasupplyai.supplier.exception.DetalleRecepcionMercaderiaNoEncontradoException;
+import com.nexasupplyai.supplier.exception.RecepcionMercaderiaNoEncontradaException;
+import com.nexasupplyai.supplier.exception.DetalleOrdenCompraNoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,16 +55,16 @@ public class DetalleRecepcionMercaderiaServiceImpl implements DetalleRecepcionMe
 
 	private DetalleRecepcionMercaderia buscar(UUID id) {
 		return repositorio.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Detalle de recepción no encontrado: " + id));
+                .orElseThrow(() -> new DetalleRecepcionMercaderiaNoEncontradoException(id));
 	}
 
 	private RecepcionMercaderia recepcion(UUID id) {
 		return recepciones.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Recepción no encontrada: " + id));
+                .orElseThrow(() -> new RecepcionMercaderiaNoEncontradaException(id));
 	}
 
 	private DetalleOrdenCompra detalle(UUID id) {
 		return detalles.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Detalle de orden no encontrado: " + id));
+                .orElseThrow(() -> new DetalleOrdenCompraNoEncontradoException(id));
 	}
 }

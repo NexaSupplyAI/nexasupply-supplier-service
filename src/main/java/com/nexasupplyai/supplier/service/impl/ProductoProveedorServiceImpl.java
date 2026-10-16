@@ -8,7 +8,8 @@ import com.nexasupplyai.supplier.mapper.ProductoProveedorMapper;
 import com.nexasupplyai.supplier.repository.ProductoProveedorRepository;
 import com.nexasupplyai.supplier.repository.ProveedorRepository;
 import com.nexasupplyai.supplier.service.interfaces.ProductoProveedorServiceInterface;
-import jakarta.persistence.EntityNotFoundException;
+import com.nexasupplyai.supplier.exception.ProductoProveedorNoEncontradoException;
+import com.nexasupplyai.supplier.exception.ProveedorNoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,12 +56,12 @@ public class ProductoProveedorServiceImpl implements ProductoProveedorServiceInt
 
     private ProductoProveedor buscar(UUID id) {
         return repositorio.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new ProductoProveedorNoEncontradoException(
                         "Producto de proveedor no encontrado: " + id));
     }
 
     private Proveedor proveedor(UUID id) {
         return proveedores.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado: " + id));
+                .orElseThrow(() -> new ProveedorNoEncontradoException(id));
     }
 }

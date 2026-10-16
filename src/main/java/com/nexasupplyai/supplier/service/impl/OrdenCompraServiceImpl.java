@@ -8,7 +8,8 @@ import com.nexasupplyai.supplier.mapper.OrdenCompraMapper;
 import com.nexasupplyai.supplier.repository.OrdenCompraRepository;
 import com.nexasupplyai.supplier.repository.ProveedorRepository;
 import com.nexasupplyai.supplier.service.interfaces.OrdenCompraServiceInterface;
-import jakarta.persistence.EntityNotFoundException;
+import com.nexasupplyai.supplier.exception.OrdenCompraNoEncontradaException;
+import com.nexasupplyai.supplier.exception.ProveedorNoEncontradoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,11 +55,11 @@ public class OrdenCompraServiceImpl implements OrdenCompraServiceInterface {
 
 	private OrdenCompra buscar(UUID id) {
 		return repositorio.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Orden de compra no encontrada: " + id));
+                .orElseThrow(() -> new OrdenCompraNoEncontradaException(id));
 	}
 
 	private Proveedor proveedor(UUID id) {
 		return proveedores.findById(id)
-				.orElseThrow(() -> new EntityNotFoundException("Proveedor no encontrado: " + id));
+                .orElseThrow(() -> new ProveedorNoEncontradoException(id));
 	}
 }
