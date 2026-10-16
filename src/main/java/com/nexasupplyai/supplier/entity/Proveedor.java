@@ -45,7 +45,7 @@ public class Proveedor {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private EstadoProveedor estado = EstadoProveedor.ACTIVO;
+    private EstadoProveedor estado = EstadoProveedor.ACTIVE;
 
     @Column(name = "rating", precision = 3, scale = 2)
     private BigDecimal calificacion;

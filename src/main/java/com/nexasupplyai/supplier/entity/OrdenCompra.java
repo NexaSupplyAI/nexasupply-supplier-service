@@ -35,7 +35,7 @@ public class OrdenCompra {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
-    private EstadoOrdenCompra estado = EstadoOrdenCompra.BORRADOR;
+    private EstadoOrdenCompra estado = EstadoOrdenCompra.DRAFT;
 
     @Column(name = "currency", nullable = false, length = 3)
     private String moneda = "PEN";
