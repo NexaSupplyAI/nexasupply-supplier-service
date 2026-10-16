@@ -7,11 +7,13 @@ import com.nexasupplyai.supplier.entity.Proveedor;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface OrdenCompraMapper {
 
+    @Mapping(target = "estado", source = "request.estado", defaultValue = "DRAFT")
     OrdenCompra aEntidad(OrdenCompraRequest request, @Context Proveedor proveedor);
 
     void actualizarEntidad(
