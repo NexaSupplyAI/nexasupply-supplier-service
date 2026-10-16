@@ -8,7 +8,10 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface ProveedorMapper {
+
     Proveedor aEntidad(ProveedorRequest request);
+
     void actualizarEntidad(ProveedorRequest request, @MappingTarget Proveedor proveedor);
+
     ProveedorResponse aResponse(Proveedor proveedor);
 }

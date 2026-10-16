@@ -11,9 +11,21 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface OrdenCompraMapper {
+
     OrdenCompra aEntidad(OrdenCompraRequest request, @Context Proveedor proveedor);
-    void actualizarEntidad(OrdenCompraRequest request, @Context Proveedor proveedor, @MappingTarget OrdenCompra entidad);
+
+    void actualizarEntidad(
+            OrdenCompraRequest request,
+            @Context Proveedor proveedor,
+            @MappingTarget OrdenCompra entidad);
+
     @org.mapstruct.Mapping(target = "idProveedor", source = "proveedor.id")
     OrdenCompraResponse aResponse(OrdenCompra entidad);
-    @AfterMapping default void asignarProveedor(@MappingTarget OrdenCompra entidad, @Context Proveedor proveedor) { entidad.setProveedor(proveedor); }
+
+    @AfterMapping
+    default void asignarProveedor(
+            @MappingTarget OrdenCompra entidad,
+            @Context Proveedor proveedor) {
+        entidad.setProveedor(proveedor);
+    }
 }

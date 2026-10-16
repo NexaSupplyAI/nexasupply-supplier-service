@@ -11,9 +11,21 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface DetalleOrdenCompraMapper {
+
     DetalleOrdenCompra aEntidad(DetalleOrdenCompraRequest request, @Context OrdenCompra ordenCompra);
-    void actualizarEntidad(DetalleOrdenCompraRequest request, @Context OrdenCompra ordenCompra, @MappingTarget DetalleOrdenCompra entidad);
+
+    void actualizarEntidad(
+            DetalleOrdenCompraRequest request,
+            @Context OrdenCompra ordenCompra,
+            @MappingTarget DetalleOrdenCompra entidad);
+
     @org.mapstruct.Mapping(target = "idOrdenCompra", source = "ordenCompra.id")
     DetalleOrdenCompraResponse aResponse(DetalleOrdenCompra entidad);
-    @AfterMapping default void asignarOrden(@MappingTarget DetalleOrdenCompra entidad, @Context OrdenCompra ordenCompra) { entidad.setOrdenCompra(ordenCompra); }
+
+    @AfterMapping
+    default void asignarOrden(
+            @MappingTarget DetalleOrdenCompra entidad,
+            @Context OrdenCompra ordenCompra) {
+        entidad.setOrdenCompra(ordenCompra);
+    }
 }
