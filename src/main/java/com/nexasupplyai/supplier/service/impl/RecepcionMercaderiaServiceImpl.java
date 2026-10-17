@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
@@ -75,15 +77,22 @@ public class RecepcionMercaderiaServiceImpl implements RecepcionMercaderiaServic
 				.orElseThrow(() -> new RecepcionMercaderiaNoEncontradaException(id));
 		if (recepcion.getEstado() == EstadoRecepcionMercaderia.POSTED) return mapper.aResponse(recepcion);
 		validarBorrador(recepcion);
-		if (recepcion.getOrdenCompra().getEstado() == EstadoOrdenCompra.CANCELLED
-				|| recepcion.getOrdenCompra().getEstado() == EstadoOrdenCompra.DRAFT) {
+		OrdenCompra orden = ordenes.bloquearPorId(recepcion.getOrdenCompra().getId())
+				.orElseThrow(() -> new OrdenCompraNoEncontradaException(recepcion.getOrdenCompra().getId()));
+		if (orden.getEstado() == EstadoOrdenCompra.CANCELLED || orden.getEstado() == EstadoOrdenCompra.DRAFT) {
 			throw new IllegalArgumentException("La orden de compra debe estar enviada o aprobada");
 		}
 		List<DetalleRecepcionMercaderia> lineas = detallesRecepcion.findAllByRecepcionMercaderiaId(id);
 		if (lineas.isEmpty()) throw new IllegalArgumentException("La recepción no tiene detalles");
+		List<DetalleOrdenCompra> lineasOrden = detallesOrden.bloquearTodasPorOrden(orden.getId());
+		Map<UUID, DetalleOrdenCompra> ordenPorId = lineasOrden.stream()
+				.collect(Collectors.toMap(DetalleOrdenCompra::getId, Function.identity()));
 
 		for (DetalleRecepcionMercaderia linea : lineas) {
-			DetalleOrdenCompra detalleOrden = linea.getDetalleOrdenCompra();
+			DetalleOrdenCompra detalleOrden = ordenPorId.get(linea.getDetalleOrdenCompra().getId());
+			if (detalleOrden == null || !detalleOrden.getIdProducto().equals(linea.getIdProducto())) {
+				throw new IllegalArgumentException("La línea recibida no pertenece a la orden de compra");
+			}
 			var nuevoAcumulado = detalleOrden.getCantidadRecibida().add(linea.getCantidadRecibida());
 			if (nuevoAcumulado.compareTo(detalleOrden.getCantidadPedida()) > 0) {
 				throw new IllegalArgumentException("La recepción supera la cantidad pendiente del producto " + detalleOrden.getSkuInstantanea());
@@ -101,15 +110,15 @@ public class RecepcionMercaderiaServiceImpl implements RecepcionMercaderiaServic
 		}
 
 		for (DetalleRecepcionMercaderia linea : lineas) {
-			DetalleOrdenCompra detalleOrden = linea.getDetalleOrdenCompra();
+			DetalleOrdenCompra detalleOrden = ordenPorId.get(linea.getDetalleOrdenCompra().getId());
 			detalleOrden.setCantidadRecibida(detalleOrden.getCantidadRecibida().add(linea.getCantidadRecibida()));
-			detallesOrden.save(detalleOrden);
 		}
 		recepcion.setEstado(EstadoRecepcionMercaderia.POSTED);
 		recepcion.setRecibidoPor(actor);
 		recepcion.setRecibidoEn(OffsetDateTime.now(ZoneOffset.UTC));
-		actualizarEstadoOrden(recepcion.getOrdenCompra());
-		return mapper.aResponse(repositorio.save(recepcion));
+		actualizarEstadoOrden(orden, lineasOrden);
+		ordenes.saveAndFlush(orden);
+		return mapper.aResponse(repositorio.saveAndFlush(recepcion));
 	}
 
 	@Transactional
@@ -125,8 +134,7 @@ public class RecepcionMercaderiaServiceImpl implements RecepcionMercaderiaServic
 		}
 	}
 
-	private void actualizarEstadoOrden(OrdenCompra orden) {
-		List<DetalleOrdenCompra> lineas = detallesOrden.findAllByOrdenCompraId(orden.getId());
+	private void actualizarEstadoOrden(OrdenCompra orden, List<DetalleOrdenCompra> lineas) {
 		boolean completa = !lineas.isEmpty() && lineas.stream()
 				.allMatch(l -> l.getCantidadRecibida().compareTo(l.getCantidadPedida()) >= 0);
 		orden.setEstado(completa ? EstadoOrdenCompra.RECEIVED : EstadoOrdenCompra.PARTIALLY_RECEIVED);
