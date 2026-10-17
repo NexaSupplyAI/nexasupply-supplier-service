@@ -36,7 +36,7 @@ public class RecepcionMercaderia {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
-    private EstadoRecepcionMercaderia estado = EstadoRecepcionMercaderia.BORRADOR;
+    private EstadoRecepcionMercaderia estado = EstadoRecepcionMercaderia.DRAFT;
 
     @Column(name = "received_by", length = 120)
     private String recibidoPor;

@@ -42,15 +42,32 @@ public class DetalleRecepcionMercaderiaServiceImpl implements DetalleRecepcionMe
 
 	@Transactional
 	public DetalleRecepcionMercaderiaResponse crear(DetalleRecepcionMercaderiaRequest request) {
+		RecepcionMercaderia recepcion = recepcion(request.idRecepcionMercaderia());
+		validarBorrador(recepcion);
+		DetalleOrdenCompra detalle = detalle(request.idDetalleOrdenCompra());
+		if (!detalle.getOrdenCompra().getId().equals(recepcion.getOrdenCompra().getId())) {
+			throw new IllegalArgumentException("El detalle no pertenece a la orden de compra de la recepción");
+		}
+		if (!detalle.getIdProducto().equals(request.idProducto())) {
+			throw new IllegalArgumentException("El producto no coincide con el detalle de la orden de compra");
+		}
+		if (request.cantidadRecibida().compareTo(detalle.getCantidadPedida()) > 0) {
+			throw new IllegalArgumentException("La cantidad recibida no puede superar la cantidad pedida");
+		}
+		repositorio.findByRecepcionMercaderiaIdAndDetalleOrdenCompraId(
+				request.idRecepcionMercaderia(), request.idDetalleOrdenCompra())
+				.ifPresent(existente -> { throw new IllegalArgumentException("El detalle ya existe en la recepción"); });
 		return mapper.aResponse(repositorio.save(mapper.aEntidad(
 				request,
-				recepcion(request.idRecepcionMercaderia()),
-				detalle(request.idDetalleOrdenCompra()))));
+				recepcion,
+				detalle)));
 	}
 
 	@Transactional
 	public void eliminar(UUID id) {
-		repositorio.delete(buscar(id));
+		DetalleRecepcionMercaderia detalle = buscar(id);
+		validarBorrador(detalle.getRecepcionMercaderia());
+		repositorio.delete(detalle);
 	}
 
 	private DetalleRecepcionMercaderia buscar(UUID id) {
@@ -66,5 +83,11 @@ public class DetalleRecepcionMercaderiaServiceImpl implements DetalleRecepcionMe
 	private DetalleOrdenCompra detalle(UUID id) {
 		return detalles.findById(id)
                 .orElseThrow(() -> new DetalleOrdenCompraNoEncontradoException(id));
+	}
+
+	private void validarBorrador(RecepcionMercaderia recepcion) {
+		if (recepcion.getEstado() != com.nexasupplyai.supplier.enums.EstadoRecepcionMercaderia.DRAFT) {
+			throw new IllegalArgumentException("Los detalles solo pueden modificarse en una recepción borrador");
+		}
 	}
 }

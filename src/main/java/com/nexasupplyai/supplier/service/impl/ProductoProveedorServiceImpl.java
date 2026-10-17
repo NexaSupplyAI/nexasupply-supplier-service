@@ -1,5 +1,6 @@
 package com.nexasupplyai.supplier.service.impl;
 
+import com.nexasupplyai.supplier.client.InventoryServiceClient;
 import com.nexasupplyai.supplier.dto.request.ProductoProveedorRequest;
 import com.nexasupplyai.supplier.dto.response.ProductoProveedorResponse;
 import com.nexasupplyai.supplier.entity.ProductoProveedor;
@@ -25,6 +26,7 @@ public class ProductoProveedorServiceImpl implements ProductoProveedorServiceInt
     private final ProductoProveedorRepository repositorio;
     private final ProveedorRepository proveedores;
     private final ProductoProveedorMapper mapper;
+    private final InventoryServiceClient inventoryServiceClient;
 
     public List<ProductoProveedorResponse> listarPorProveedor(UUID id) {
         return repositorio.findAllByProveedorId(id).stream()
@@ -39,12 +41,14 @@ public class ProductoProveedorServiceImpl implements ProductoProveedorServiceInt
     @Transactional
     public ProductoProveedorResponse crear(ProductoProveedorRequest request) {
         Proveedor proveedor = proveedor(request.idProveedor());
+        validarProducto(request, null);
         return mapper.aResponse(repositorio.save(mapper.aEntidad(request, proveedor)));
     }
 
     @Transactional
     public ProductoProveedorResponse actualizar(UUID id, ProductoProveedorRequest request) {
         ProductoProveedor entidad = buscar(id);
+        validarProducto(request, id);
         mapper.actualizarEntidad(request, proveedor(request.idProveedor()), entidad);
         return mapper.aResponse(repositorio.save(entidad));
     }
@@ -63,5 +67,17 @@ public class ProductoProveedorServiceImpl implements ProductoProveedorServiceInt
     private Proveedor proveedor(UUID id) {
         return proveedores.findById(id)
                 .orElseThrow(() -> new ProveedorNoEncontradoException(id));
+    }
+
+    private void validarProducto(ProductoProveedorRequest request, UUID idActual) {
+        var producto = inventoryServiceClient.obtenerProducto(request.idProducto());
+        if (producto == null || !Boolean.TRUE.equals(producto.activo())) {
+            throw new IllegalArgumentException("El producto no existe o está inactivo en Inventory Service");
+        }
+        repositorio.findByProveedorIdAndIdProducto(request.idProveedor(), request.idProducto())
+                .filter(relacion -> !relacion.getId().equals(idActual))
+                .ifPresent(relacion -> {
+                    throw new IllegalArgumentException("El producto ya está asociado al proveedor");
+                });
     }
 }

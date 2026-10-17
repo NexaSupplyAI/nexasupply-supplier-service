@@ -34,21 +34,14 @@ public class ProveedorServiceImpl implements ProveedorServiceInterface {
 
     @Transactional
     public ProveedorResponse crear(ProveedorRequest request) {
-        repositorio.findByCodigoProveedor(request.codigoProveedor())
-                .ifPresent(proveedor -> {
-                    throw new IllegalArgumentException("El código de proveedor ya existe");
-                });
+        validarUnicidad(request, null);
         return mapper.aResponse(repositorio.save(mapper.aEntidad(request)));
     }
 
     @Transactional
     public ProveedorResponse actualizar(UUID id, ProveedorRequest request) {
         Proveedor entidad = buscar(id);
-        repositorio.findByCodigoProveedor(request.codigoProveedor())
-                .filter(proveedor -> !proveedor.getId().equals(id))
-                .ifPresent(proveedor -> {
-                    throw new IllegalArgumentException("El código de proveedor ya existe");
-                });
+        validarUnicidad(request, id);
         mapper.actualizarEntidad(request, entidad);
         return mapper.aResponse(repositorio.save(entidad));
     }
@@ -61,5 +54,21 @@ public class ProveedorServiceImpl implements ProveedorServiceInterface {
     private Proveedor buscar(UUID id) {
         return repositorio.findById(id)
                 .orElseThrow(() -> new ProveedorNoEncontradoException(id));
+    }
+
+    private void validarUnicidad(ProveedorRequest request, UUID idActual) {
+        repositorio.findByCodigoProveedor(request.codigoProveedor())
+                .filter(proveedor -> !proveedor.getId().equals(idActual))
+                .ifPresent(proveedor -> { throw new IllegalArgumentException("El código de proveedor ya existe"); });
+        if (request.numeroFiscal() != null && !request.numeroFiscal().isBlank()) {
+            repositorio.findByNumeroFiscal(request.numeroFiscal())
+                    .filter(proveedor -> !proveedor.getId().equals(idActual))
+                    .ifPresent(proveedor -> { throw new IllegalArgumentException("El número fiscal ya existe"); });
+        }
+        if (request.email() != null && !request.email().isBlank()) {
+            repositorio.findByEmailIgnoreCase(request.email())
+                    .filter(proveedor -> !proveedor.getId().equals(idActual))
+                    .ifPresent(proveedor -> { throw new IllegalArgumentException("El correo del proveedor ya existe"); });
+        }
     }
 }
