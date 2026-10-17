@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/v1/recepciones-mercaderia")
@@ -43,6 +44,11 @@ public class RecepcionMercaderiaController {
             @PathVariable UUID id,
             @Valid @RequestBody RecepcionMercaderiaRequest r) {
         return servicio.actualizar(id, r);
+    }
+
+    @PostMapping("/{id}/postear")
+    public RecepcionMercaderiaResponse postear(@PathVariable UUID id, Authentication authentication) {
+        return servicio.postear(id, authentication == null ? "local-demo-user" : authentication.getName());
     }
 
     @DeleteMapping("/{id}")
