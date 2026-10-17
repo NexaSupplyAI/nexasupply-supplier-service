@@ -15,8 +15,16 @@ public interface ProductoProveedorMapper {
 
     @Mapping(target = "preferido", source = "request.preferido", defaultValue = "false")
     @Mapping(target = "activo", source = "request.activo", defaultValue = "true")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "proveedor", ignore = true)
+    @Mapping(target = "creadoEn", ignore = true)
+    @Mapping(target = "actualizadoEn", ignore = true)
     ProductoProveedor aEntidad(ProductoProveedorRequest request, @Context Proveedor proveedor);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "proveedor", ignore = true)
+    @Mapping(target = "creadoEn", ignore = true)
+    @Mapping(target = "actualizadoEn", ignore = true)
     void actualizarEntidad(
             ProductoProveedorRequest request,
             @Context Proveedor proveedor,
