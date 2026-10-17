@@ -13,9 +13,24 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface OrdenCompraMapper {
 
-    @Mapping(target = "estado", source = "request.estado", defaultValue = "DRAFT")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "proveedor", ignore = true)
+    @Mapping(target = "estado", ignore = true)
+    @Mapping(target = "aprobadoPor", ignore = true)
+    @Mapping(target = "aprobadoEn", ignore = true)
+    @Mapping(target = "creadoEn", ignore = true)
+    @Mapping(target = "actualizadoEn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     OrdenCompra aEntidad(OrdenCompraRequest request, @Context Proveedor proveedor);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "proveedor", ignore = true)
+    @Mapping(target = "estado", ignore = true)
+    @Mapping(target = "aprobadoPor", ignore = true)
+    @Mapping(target = "aprobadoEn", ignore = true)
+    @Mapping(target = "creadoEn", ignore = true)
+    @Mapping(target = "actualizadoEn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     void actualizarEntidad(
             OrdenCompraRequest request,
             @Context Proveedor proveedor,
