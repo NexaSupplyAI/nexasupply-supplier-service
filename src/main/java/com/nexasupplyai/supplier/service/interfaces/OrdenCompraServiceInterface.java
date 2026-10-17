@@ -16,6 +16,9 @@ public interface OrdenCompraServiceInterface {
 	OrdenCompraResponse crear(OrdenCompraRequest request);
 
 	OrdenCompraResponse actualizar(UUID id, OrdenCompraRequest request);
+	OrdenCompraResponse enviar(UUID id, String actor);
+	OrdenCompraResponse aprobar(UUID id, String actor);
+	OrdenCompraResponse cancelar(UUID id, String actor, String motivo);
 
 	void eliminar(UUID id);
 }
