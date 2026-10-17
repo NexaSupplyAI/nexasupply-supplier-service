@@ -17,10 +17,11 @@ Microservicio de proveedores y abastecimiento. Es propietario del esquema Postgr
 | `DB_URL` | No | `jdbc:postgresql://localhost:5432/nexasupplyai` |
 | `DB_USER` | No | `postgres` |
 | `DB_PASSWORD` | No | `postgres` |
-| `JWT_ISSUER_URI` | Sí | Sin valor |
+| `JWT_ISSUER_URI` | Producción | `http://localhost:9999` |
+| `JWT_JWK_SET_URI` | Producción | `http://localhost:9999/.well-known/jwks.json` |
+| `APP_SECURITY_ENABLED` | No | `true` |
 | `CORS_ALLOWED_ORIGINS` | No | `http://localhost:4200` |
 | `INVENTORY_SERVICE_URL` | No | `http://localhost:8081` |
-| `FLYWAY_ENABLED` | No | `false` |
 
 La base se inicializa con [`../nexasupplyai.sql`](../nexasupplyai.sql). El token entrante y `X-Correlation-ID` se propagan a Inventory Service.
 
@@ -68,6 +69,6 @@ Estados de proveedor: `ACTIVE`, `INACTIVE`, `BLOCKED`. Estados de orden: `DRAFT`
 ./mvnw clean package
 ```
 
-## Alcance pendiente
+## Publicación de recepciones
 
-Publicar una recepción todavía no genera automáticamente una entrada en Inventory Service ni actualiza de forma agregada la cantidad recibida de la orden. Esa operación debe implementarse como un caso de uso idempotente con compensación ante fallos.
+`POST /api/v1/recepciones-mercaderia/{id}/postear` registra cada línea en Inventory Service con la clave idempotente `receipt:{recepcionId}:{detalleId}`, actualiza las cantidades acumuladas y cambia la orden a `PARTIALLY_RECEIVED` o `RECEIVED`. Si una dependencia falla, se puede reintentar sin duplicar entradas ya procesadas.
