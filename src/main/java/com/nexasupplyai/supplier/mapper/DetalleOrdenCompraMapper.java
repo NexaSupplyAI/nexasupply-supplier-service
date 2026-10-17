@@ -12,8 +12,18 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface DetalleOrdenCompraMapper {
 
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "ordenCompra", ignore = true)
+    @org.mapstruct.Mapping(target = "cantidadRecibida", ignore = true)
+    @org.mapstruct.Mapping(target = "totalLinea", ignore = true)
+    @org.mapstruct.Mapping(target = "creadoEn", ignore = true)
     DetalleOrdenCompra aEntidad(DetalleOrdenCompraRequest request, @Context OrdenCompra ordenCompra);
 
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "ordenCompra", ignore = true)
+    @org.mapstruct.Mapping(target = "cantidadRecibida", ignore = true)
+    @org.mapstruct.Mapping(target = "totalLinea", ignore = true)
+    @org.mapstruct.Mapping(target = "creadoEn", ignore = true)
     void actualizarEntidad(
             DetalleOrdenCompraRequest request,
             @Context OrdenCompra ordenCompra,
