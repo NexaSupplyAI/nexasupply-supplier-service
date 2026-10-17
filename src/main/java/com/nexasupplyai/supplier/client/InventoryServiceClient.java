@@ -2,11 +2,13 @@ package com.nexasupplyai.supplier.client;
 
 import com.nexasupplyai.supplier.dto.external.AlmacenInventarioResponse;
 import com.nexasupplyai.supplier.dto.external.ProductoInventarioResponse;
+import com.nexasupplyai.supplier.dto.external.EntradaInventarioRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.util.UUID;
+import java.util.Map;
 
 @Component
 public class InventoryServiceClient {
@@ -32,5 +34,13 @@ public class InventoryServiceClient {
                 .uri("/api/v1/almacenes/{id}", idAlmacen)
                 .retrieve()
                 .body(AlmacenInventarioResponse.class);
+    }
+
+    public Map<String, Object> registrarEntrada(EntradaInventarioRequest request) {
+        return clienteHttp.post()
+                .uri("/api/v1/operaciones-inventario/entradas")
+                .body(request)
+                .retrieve()
+                .body(new org.springframework.core.ParameterizedTypeReference<>() {});
     }
 }
