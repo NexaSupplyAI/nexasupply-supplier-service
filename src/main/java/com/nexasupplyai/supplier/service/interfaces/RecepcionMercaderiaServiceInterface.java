@@ -15,5 +15,7 @@ public interface RecepcionMercaderiaServiceInterface {
 
 	RecepcionMercaderiaResponse actualizar(UUID id, RecepcionMercaderiaRequest request);
 
+	RecepcionMercaderiaResponse postear(UUID id, String actor);
+
 	void eliminar(UUID id);
 }
