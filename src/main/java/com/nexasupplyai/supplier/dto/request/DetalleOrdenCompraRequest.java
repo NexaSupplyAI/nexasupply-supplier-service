@@ -16,8 +16,6 @@ public record DetalleOrdenCompraRequest(
 
                 @NotNull @DecimalMin(value = "0", inclusive = false) BigDecimal cantidadPedida,
 
-                @NotNull @DecimalMin("0") BigDecimal cantidadRecibida,
-
                 @NotNull @DecimalMin("0") BigDecimal precioUnitario,
 
                 @NotNull @DecimalMin("0") BigDecimal montoDescuento
