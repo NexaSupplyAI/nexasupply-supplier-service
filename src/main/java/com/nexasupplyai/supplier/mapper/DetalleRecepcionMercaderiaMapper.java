@@ -13,16 +13,14 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface DetalleRecepcionMercaderiaMapper {
 
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "recepcionMercaderia", ignore = true)
+    @org.mapstruct.Mapping(target = "detalleOrdenCompra", ignore = true)
+    @org.mapstruct.Mapping(target = "creadoEn", ignore = true)
     DetalleRecepcionMercaderia aEntidad(
             DetalleRecepcionMercaderiaRequest request,
             @Context RecepcionMercaderia recepcion,
             @Context DetalleOrdenCompra detalleOrden);
-
-    void actualizarEntidad(
-            DetalleRecepcionMercaderiaRequest request,
-            @Context RecepcionMercaderia recepcion,
-            @Context DetalleOrdenCompra detalleOrden,
-            @MappingTarget DetalleRecepcionMercaderia entidad);
 
     @org.mapstruct.Mapping(target = "idRecepcionMercaderia", source = "recepcionMercaderia.id")
     @org.mapstruct.Mapping(target = "idDetalleOrdenCompra", source = "detalleOrdenCompra.id")
