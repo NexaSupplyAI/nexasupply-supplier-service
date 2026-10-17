@@ -45,8 +45,9 @@ class RecepcionMercaderiaServiceImplTest {
         linea.setIdProducto(detalleOrden.getIdProducto()); linea.setCantidadRecibida(new BigDecimal("5"));
         when(recepciones.bloquearPorId(recepcionId)).thenReturn(Optional.of(recepcion));
         when(detallesRecepcion.findAllByRecepcionMercaderiaId(recepcionId)).thenReturn(List.of(linea));
-        when(detallesOrden.findAllByOrdenCompraId(orden.getId())).thenReturn(List.of(detalleOrden));
-        when(recepciones.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(ordenes.bloquearPorId(orden.getId())).thenReturn(Optional.of(orden));
+        when(detallesOrden.bloquearTodasPorOrden(orden.getId())).thenReturn(List.of(detalleOrden));
+        when(recepciones.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         var servicio = new RecepcionMercaderiaServiceImpl(recepciones, ordenes, mapper, inventario,
                 detallesRecepcion, detallesOrden);
 
@@ -56,5 +57,19 @@ class RecepcionMercaderiaServiceImplTest {
         assertEquals(new BigDecimal("5"), detalleOrden.getCantidadRecibida());
         assertEquals(EstadoOrdenCompra.RECEIVED, orden.getEstado());
         verify(inventario).registrarEntrada(any());
+    }
+
+    @Test
+    void repostearRecepcionNoImpactaInventarioOtraVez() {
+        UUID recepcionId = UUID.randomUUID();
+        RecepcionMercaderia recepcion = new RecepcionMercaderia();
+        recepcion.setId(recepcionId); recepcion.setEstado(EstadoRecepcionMercaderia.POSTED);
+        when(recepciones.bloquearPorId(recepcionId)).thenReturn(Optional.of(recepcion));
+        var servicio = new RecepcionMercaderiaServiceImpl(recepciones, ordenes, mapper, inventario,
+                detallesRecepcion, detallesOrden);
+
+        servicio.postear(recepcionId, "operador");
+
+        verifyNoInteractions(inventario, detallesRecepcion, detallesOrden, ordenes);
     }
 }
