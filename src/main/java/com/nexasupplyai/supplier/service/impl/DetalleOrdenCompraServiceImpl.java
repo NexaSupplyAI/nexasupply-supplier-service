@@ -42,20 +42,28 @@ public class DetalleOrdenCompraServiceImpl implements DetalleOrdenCompraServiceI
 	@Transactional
 	public DetalleOrdenCompraResponse crear(DetalleOrdenCompraRequest request) {
 		validar(request, null);
-		return mapper.aResponse(repositorio.save(mapper.aEntidad(request, orden(request.idOrdenCompra()))));
+		OrdenCompra orden = orden(request.idOrdenCompra());
+		validarBorrador(orden);
+		DetalleOrdenCompra detalle = mapper.aEntidad(request, orden);
+		detalle.setCantidadRecibida(java.math.BigDecimal.ZERO);
+		return mapper.aResponse(repositorio.save(detalle));
 	}
 
 	@Transactional
 	public DetalleOrdenCompraResponse actualizar(UUID id, DetalleOrdenCompraRequest request) {
 		DetalleOrdenCompra entidad = buscar(id);
 		validar(request, id);
-		mapper.actualizarEntidad(request, orden(request.idOrdenCompra()), entidad);
+		OrdenCompra orden = orden(request.idOrdenCompra());
+		validarBorrador(orden);
+		mapper.actualizarEntidad(request, orden, entidad);
 		return mapper.aResponse(repositorio.save(entidad));
 	}
 
 	@Transactional
 	public void eliminar(UUID id) {
-		repositorio.delete(buscar(id));
+		DetalleOrdenCompra detalle = buscar(id);
+		validarBorrador(detalle.getOrdenCompra());
+		repositorio.delete(detalle);
 	}
 
 	private DetalleOrdenCompra buscar(UUID id) {
@@ -69,9 +77,6 @@ public class DetalleOrdenCompraServiceImpl implements DetalleOrdenCompraServiceI
 	}
 
 	private void validar(DetalleOrdenCompraRequest request, UUID idActual) {
-		if (request.cantidadRecibida().compareTo(request.cantidadPedida()) > 0) {
-			throw new IllegalArgumentException("La cantidad recibida no puede superar la cantidad pedida");
-		}
 		repositorio.findByOrdenCompraIdAndIdProducto(request.idOrdenCompra(), request.idProducto())
 				.filter(detalle -> !detalle.getId().equals(idActual))
 				.ifPresent(detalle -> { throw new IllegalArgumentException("El producto ya existe en la orden de compra"); });
@@ -82,6 +87,12 @@ public class DetalleOrdenCompraServiceImpl implements DetalleOrdenCompraServiceI
 		if (!Objects.equals(producto.sku(), request.skuInstantanea())
 				|| !Objects.equals(producto.nombre(), request.nombreProductoInstantanea())) {
 			throw new IllegalArgumentException("El SKU o nombre del producto no coincide con Inventory Service");
+		}
+	}
+
+	private void validarBorrador(OrdenCompra orden) {
+		if (orden.getEstado() != com.nexasupplyai.supplier.enums.EstadoOrdenCompra.DRAFT) {
+			throw new IllegalArgumentException("Los detalles solo pueden modificarse mientras la orden está en borrador");
 		}
 	}
 }
