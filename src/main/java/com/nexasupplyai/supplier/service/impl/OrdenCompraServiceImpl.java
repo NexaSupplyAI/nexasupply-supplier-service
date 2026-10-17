@@ -27,6 +27,10 @@ public class OrdenCompraServiceImpl implements OrdenCompraServiceInterface {
 	private final ProveedorRepository proveedores;
 	private final OrdenCompraMapper mapper;
 
+	public List<OrdenCompraResponse> listar() {
+		return repositorio.findAll().stream().map(mapper::aResponse).toList();
+	}
+
 	public List<OrdenCompraResponse> listarPorProveedor(UUID id) {
 		return repositorio.findAllByProveedorId(id).stream()
 				.map(mapper::aResponse)
