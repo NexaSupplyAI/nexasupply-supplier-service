@@ -20,8 +20,8 @@ public class OrdenCompraController {
 
     @GetMapping
     public List<OrdenCompraResponse> listar(
-            @RequestParam UUID idProveedor) {
-        return servicio.listarPorProveedor(idProveedor);
+            @RequestParam(required = false) UUID idProveedor) {
+        return idProveedor == null ? servicio.listar() : servicio.listarPorProveedor(idProveedor);
     }
 
     @GetMapping("/{id}")
