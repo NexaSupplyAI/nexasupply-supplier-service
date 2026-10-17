@@ -7,15 +7,27 @@ import com.nexasupplyai.supplier.entity.RecepcionMercaderia;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface RecepcionMercaderiaMapper {
 
-    @Mapping(target = "estado", source = "request.estado", defaultValue = "DRAFT")
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "ordenCompra", ignore = true)
+    @org.mapstruct.Mapping(target = "estado", ignore = true)
+    @org.mapstruct.Mapping(target = "recibidoPor", ignore = true)
+    @org.mapstruct.Mapping(target = "recibidoEn", ignore = true)
+    @org.mapstruct.Mapping(target = "creadoEn", ignore = true)
+    @org.mapstruct.Mapping(target = "actualizadoEn", ignore = true)
     RecepcionMercaderia aEntidad(RecepcionMercaderiaRequest request, @Context OrdenCompra ordenCompra);
 
+    @org.mapstruct.Mapping(target = "id", ignore = true)
+    @org.mapstruct.Mapping(target = "ordenCompra", ignore = true)
+    @org.mapstruct.Mapping(target = "estado", ignore = true)
+    @org.mapstruct.Mapping(target = "recibidoPor", ignore = true)
+    @org.mapstruct.Mapping(target = "recibidoEn", ignore = true)
+    @org.mapstruct.Mapping(target = "creadoEn", ignore = true)
+    @org.mapstruct.Mapping(target = "actualizadoEn", ignore = true)
     void actualizarEntidad(
             RecepcionMercaderiaRequest request,
             @Context OrdenCompra ordenCompra,
