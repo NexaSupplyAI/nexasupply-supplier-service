@@ -43,6 +43,7 @@ public class DetalleRecepcionMercaderiaServiceImpl implements DetalleRecepcionMe
 	@Transactional
 	public DetalleRecepcionMercaderiaResponse crear(DetalleRecepcionMercaderiaRequest request) {
 		RecepcionMercaderia recepcion = recepcion(request.idRecepcionMercaderia());
+		validarBorrador(recepcion);
 		DetalleOrdenCompra detalle = detalle(request.idDetalleOrdenCompra());
 		if (!detalle.getOrdenCompra().getId().equals(recepcion.getOrdenCompra().getId())) {
 			throw new IllegalArgumentException("El detalle no pertenece a la orden de compra de la recepción");
@@ -64,7 +65,9 @@ public class DetalleRecepcionMercaderiaServiceImpl implements DetalleRecepcionMe
 
 	@Transactional
 	public void eliminar(UUID id) {
-		repositorio.delete(buscar(id));
+		DetalleRecepcionMercaderia detalle = buscar(id);
+		validarBorrador(detalle.getRecepcionMercaderia());
+		repositorio.delete(detalle);
 	}
 
 	private DetalleRecepcionMercaderia buscar(UUID id) {
@@ -80,5 +83,11 @@ public class DetalleRecepcionMercaderiaServiceImpl implements DetalleRecepcionMe
 	private DetalleOrdenCompra detalle(UUID id) {
 		return detalles.findById(id)
                 .orElseThrow(() -> new DetalleOrdenCompraNoEncontradoException(id));
+	}
+
+	private void validarBorrador(RecepcionMercaderia recepcion) {
+		if (recepcion.getEstado() != com.nexasupplyai.supplier.enums.EstadoRecepcionMercaderia.DRAFT) {
+			throw new IllegalArgumentException("Los detalles solo pueden modificarse en una recepción borrador");
+		}
 	}
 }
