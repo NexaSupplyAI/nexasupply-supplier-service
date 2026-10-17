@@ -1,11 +1,9 @@
 package com.nexasupplyai.supplier.dto.request;
 
-import com.nexasupplyai.supplier.enums.EstadoOrdenCompra;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public record OrdenCompraRequest(
@@ -16,8 +14,6 @@ public record OrdenCompraRequest(
 
         @NotNull
         UUID idProveedor,
-
-        EstadoOrdenCompra estado,
 
         @NotBlank
         @Pattern(regexp = "^[A-Z]{3}$")
@@ -44,11 +40,6 @@ public record OrdenCompraRequest(
         String notas,
 
         @Size(max = 120)
-        String solicitadoPor,
-
-        @Size(max = 120)
-        String aprobadoPor,
-
-        OffsetDateTime aprobadoEn
+        String solicitadoPor
 
 ) {}
