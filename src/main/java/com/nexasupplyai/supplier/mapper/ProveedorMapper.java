@@ -12,8 +12,16 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface ProveedorMapper {
 
     @Mapping(target = "estado", source = "estado", defaultValue = "ACTIVE")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "creadoEn", ignore = true)
+    @Mapping(target = "actualizadoEn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     Proveedor aEntidad(ProveedorRequest request);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "creadoEn", ignore = true)
+    @Mapping(target = "actualizadoEn", ignore = true)
+    @Mapping(target = "version", ignore = true)
     void actualizarEntidad(ProveedorRequest request, @MappingTarget Proveedor proveedor);
 
     ProveedorResponse aResponse(Proveedor proveedor);
