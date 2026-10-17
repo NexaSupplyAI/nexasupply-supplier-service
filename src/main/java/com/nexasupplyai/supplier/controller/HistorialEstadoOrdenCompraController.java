@@ -1,9 +1,7 @@
 package com.nexasupplyai.supplier.controller;
 
-import com.nexasupplyai.supplier.dto.request.HistorialEstadoOrdenCompraRequest;
 import com.nexasupplyai.supplier.dto.response.HistorialEstadoOrdenCompraResponse;
 import com.nexasupplyai.supplier.service.interfaces.HistorialEstadoOrdenCompraServiceInterface;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +28,4 @@ public class HistorialEstadoOrdenCompraController {
         return servicio.obtenerPorId(id);
     }
 
-    @PostMapping
-    public ResponseEntity<HistorialEstadoOrdenCompraResponse> crear(
-            @Valid @RequestBody HistorialEstadoOrdenCompraRequest r) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(servicio.crear(r));
-    }
 }
