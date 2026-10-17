@@ -1,9 +1,7 @@
 package com.nexasupplyai.supplier.dto.request;
 
-import com.nexasupplyai.supplier.enums.EstadoRecepcionMercaderia;
 import jakarta.validation.constraints.*;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public record RecepcionMercaderiaRequest(
@@ -17,13 +15,6 @@ public record RecepcionMercaderiaRequest(
 
         @NotNull
         UUID idAlmacen,
-
-        EstadoRecepcionMercaderia estado,
-
-        @Size(max = 120)
-        String recibidoPor,
-
-        OffsetDateTime recibidoEn,
 
         String notas
 
