@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface OrdenCompraServiceInterface {
 
+	List<OrdenCompraResponse> listar();
+
 	List<OrdenCompraResponse> listarPorProveedor(UUID idProveedor);
 
 	OrdenCompraResponse obtenerPorId(UUID id);
